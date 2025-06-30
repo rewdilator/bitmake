@@ -12,7 +12,8 @@
     button:hover { background: #0056cc; }
     .error { color: red; }
     pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; }
-    input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100px; }
+    .loading { color: #666; font-style: italic; }
   </style>
 </head>
 <body>
@@ -27,7 +28,7 @@
     
     <div class="card">
       <h2>Order Book</h2>
-      <div>
+      <div style="display: flex; gap: 10px; align-items: center;">
         <input type="text" id="pairInput" placeholder="btc_usdt" value="btc_usdt">
         <button id="fetchOrderBook">Fetch Order Book</button>
       </div>
@@ -35,29 +36,80 @@
     </div>
   </div>
 
-  <!-- Previous HTML remains the same, just update the fetchOrderBook function: -->
-<script>
-  async function fetchOrderBook(pair) {
-    try {
-      const output = document.getElementById('orderBookOutput');
-      output.innerHTML = '<p>Loading orderbook data...</p>';
+  <script>
+    // Client-side fetch functions with enhanced error handling
+    async function fetchTickers() {
+      const output = document.getElementById('tickersOutput');
+      output.innerHTML = '<p class="loading">Loading tickers...</p>';
       
-      const response = await fetch(`/api/orderbook/${pair}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
-      const data = await response.json();
-      
-      // Additional validation for orderbook data
-      if (!data.bids || !data.asks) {
-        throw new Error('Received unexpected data format from orderbook endpoint');
+      try {
+        const response = await fetch('/api/tickers');
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        if (!Array.isArray(data)) {
+          throw new Error('Unexpected data format received');
+        }
+        
+        displayData(data, 'tickersOutput');
+      } catch (error) {
+        showError(error, 'tickersOutput');
+        console.error('Tickers fetch error:', error);
       }
-      
-      displayData(data, 'orderBookOutput');
-    } catch (error) {
-      showError(error, 'orderBookOutput');
-      console.error('Orderbook fetch error:', error);
     }
-  }
-</script>
+
+    async function fetchOrderBook(pair) {
+      const output = document.getElementById('orderBookOutput');
+      output.innerHTML = '<p class="loading">Loading order book...</p>';
+      
+      try {
+        const response = await fetch(`/api/orderbook/${pair}`);
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Validate orderbook structure
+        if (!data.bids || !data.asks) {
+          throw new Error('Order book data is not in expected format');
+        }
+        
+        displayData(data, 'orderBookOutput');
+      } catch (error) {
+        showError(error, 'orderBookOutput');
+        console.error('Order book fetch error:', error);
+      }
+    }
+
+    function displayData(data, elementId) {
+      const output = document.getElementById(elementId);
+      output.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    }
+
+    function showError(error, elementId) {
+      const output = document.getElementById(elementId);
+      output.innerHTML = `
+        <div class="error">
+          <p><strong>Error:</strong> ${error.message}</p>
+          <p>Please check the console for details.</p>
+        </div>
+      `;
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('fetchTickers').addEventListener('click', fetchTickers);
+      document.getElementById('fetchOrderBook').addEventListener('click', () => {
+        const pair = document.getElementById('pairInput').value.trim() || 'btc_usdt';
+        fetchOrderBook(pair);
+      });
+      
+      // Fetch tickers on page load
+      fetchTickers();
+    });
+  </script>
 </body>
 </html>
