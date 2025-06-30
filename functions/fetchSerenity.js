@@ -1,15 +1,19 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  // Determine which endpoint was called
-  const isOrderbook = event.rawUrl.includes('/api/orderbook');
-  const ticker_id = event.queryStringParameters.ticker_id;
-
+  const { ticker_id } = event.queryStringParameters;
+  
   try {
-    const apiUrl = isOrderbook
-      ? `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`
-      : 'https://www.serenity.exchange/api/v2/trade/coingecko/tickers';
-
+    let apiUrl;
+    
+    if (ticker_id) {
+      // This is an orderbook request
+      apiUrl = `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`;
+    } else {
+      // This is a tickers request
+      apiUrl = 'https://www.serenity.exchange/api/v2/trade/coingecko/tickers';
+    }
+    
     const response = await fetch(apiUrl);
     if (!response.ok) throw new Error(`API request failed: ${response.statusText}`);
     
