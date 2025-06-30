@@ -1,36 +1,20 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  const path = event.path;
-  const { ticker_id } = event.queryStringParameters || {};
-  
+  // Determine which endpoint was called
+  const isOrderbook = event.rawUrl.includes('/api/orderbook');
+  const ticker_id = event.queryStringParameters.ticker_id;
+
   try {
-    let apiUrl;
-    
-    if (path.includes('/api/orderbook')) {
-      if (!ticker_id) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: 'ticker_id parameter is required' }),
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        };
-      }
-      apiUrl = `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`;
-    } else {
-      apiUrl = 'https://www.serenity.exchange/api/v2/trade/coingecko/tickers';
-    }
-    
+    const apiUrl = isOrderbook
+      ? `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`
+      : 'https://www.serenity.exchange/api/v2/trade/coingecko/tickers';
+
     const response = await fetch(apiUrl);
-    
-    if (!response.ok) {
-      throw new Error(`Serenity API error: ${response.statusText}`);
-    }
+    if (!response.ok) throw new Error(`API request failed: ${response.statusText}`);
     
     const data = await response.json();
-    
+
     return {
       statusCode: 200,
       body: JSON.stringify(data),
