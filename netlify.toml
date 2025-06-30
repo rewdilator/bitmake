@@ -1,4 +1,27 @@
 [build]
-  command = "npm install && npm run build"
+  command = "npm install && npm install node-fetch"
   publish = "public"
   functions = "functions"
+
+[[redirects]]
+  from = "/api/tickers"
+  to = "/.netlify/functions/fetchSerenity"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/orderbook"
+  to = "/.netlify/functions/fetchSerenity"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Content-Type = "application/json"
