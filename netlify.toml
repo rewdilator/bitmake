@@ -13,8 +13,6 @@
   to = "/.netlify/functions/fetchSerenity?ticker_id=:splat"
   status = 200
   force = true
-  conditions:
-    Role = "orderbook"
 
 [[headers]]
   for = "/api/*"
