@@ -10,7 +10,7 @@
 
 [[redirects]]
   from = "/api/orderbook/*"
-  to = "/.netlify/functions/fetchSerenity?ticker_id=:splat"
+  to = "/.netlify/functions/fetchSerenity?ticker_id=:splat&request_type=orderbook"
   status = 200
   force = true
 
