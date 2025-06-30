@@ -1,7 +1,0 @@
-[build]
-  command = "composer install && php generator.php"
-  publish = "dist"
-  functions = "functions"
-
-[[plugins]]
-  package = "netlify-plugin-php"
