@@ -16,8 +16,13 @@ exports.handler = async (event) => {
         };
       }
       apiUrl = `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`;
-    } else {
+    } else if (path.includes('/tickers')) {
       apiUrl = 'https://www.serenity.exchange/api/v2/trade/coingecko/tickers';
+    } else {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: 'Endpoint not found' })
+      };
     }
     
     const response = await fetch(apiUrl);
