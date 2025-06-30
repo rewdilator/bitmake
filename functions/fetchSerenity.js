@@ -1,21 +1,34 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  const { ticker_id } = event.queryStringParameters;
-  const isOrderbook = event.path.includes('/orderbook') || event.rawUrl.includes('/orderbook');
-
+  const { ticker_id, request_type } = event.queryStringParameters;
+  
   try {
-    const apiUrl = isOrderbook
-      ? `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`
-      : 'https://www.serenity.exchange/api/v2/trade/coingecko/tickers';
-
-    const response = await fetch(apiUrl);
-    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+    // Verify the API endpoint is correct
+    const apiBase = 'https://www.serenity.exchange/api/v2';
+    let apiUrl;
     
+    if (request_type === 'orderbook') {
+      if (!ticker_id) throw new Error('ticker_id is required');
+      apiUrl = `${apiBase}/orderbook/coingecko?ticker_id=${ticker_id}`;
+    } else {
+      apiUrl = `${apiBase}/trade/coingecko/tickers`;
+    }
+
+    console.log(`Fetching from: ${apiUrl}`);
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
     const data = await response.json();
     
-    if (isOrderbook && (!data.bids || !data.asks)) {
-      throw new Error('Invalid orderbook data structure');
+    // Validate response structure
+    if (request_type === 'orderbook') {
+      if (!data.bids || !data.asks) {
+        throw new Error('Orderbook data structure not found');
+      }
     }
 
     return {
@@ -27,9 +40,14 @@ exports.handler = async (event) => {
       }
     };
   } catch (error) {
+    console.error('Error:', error.message);
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
+      statusCode: error.message.includes('required') ? 400 : 500,
+      body: JSON.stringify({ 
+        error: error.message,
+        requested_ticker: ticker_id,
+        request_type: request_type
+      }),
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
