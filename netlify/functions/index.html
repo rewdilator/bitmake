@@ -38,8 +38,7 @@
     // Client-side fetch functions
     async function fetchTickers() {
       try {
-        // Using Netlify Function
-        const response = await fetch('/.netlify/functions/fetchSerenity');
+        const response = await fetch('/api/tickers');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         displayData(data, 'tickersOutput');
@@ -50,8 +49,7 @@
 
     async function fetchOrderBook(pair) {
       try {
-        // Using Netlify Function
-        const response = await fetch(`/.netlify/functions/fetchSerenity/orderbook?ticker_id=${pair}`);
+        const response = await fetch(`/api/orderbook?ticker_id=${pair}`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         displayData(data, 'orderBookOutput');
