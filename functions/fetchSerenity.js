@@ -1,33 +1,22 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  // Determine if this is an orderbook request
-  const isOrderbookRequest = event.rawUrl.includes('/api/orderbook');
-  const { ticker_id } = event.queryStringParameters;
+  const { ticker_id, request_type } = event.queryStringParameters;
   
   try {
     let apiUrl;
     
-    if (isOrderbookRequest) {
-      // ORDERBOOK ENDPOINT
+    if (request_type === 'orderbook') {
       if (!ticker_id) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: 'ticker_id parameter is required for orderbook' }),
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        };
+        throw new Error('ticker_id parameter is required for orderbook');
       }
       apiUrl = `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`;
     } else {
-      // TICKERS ENDPOINT
       apiUrl = 'https://www.serenity.exchange/api/v2/trade/coingecko/tickers';
     }
     
     const response = await fetch(apiUrl);
-    if (!response.ok) throw new Error(`Serenity API request failed: ${response.statusText}`);
+    if (!response.ok) throw new Error(`API request failed: ${response.statusText}`);
     
     const data = await response.json();
 
@@ -41,7 +30,7 @@ exports.handler = async (event) => {
     };
   } catch (error) {
     return {
-      statusCode: 500,
+      statusCode: error.message.includes('required') ? 400 : 500,
       body: JSON.stringify({ error: error.message }),
       headers: {
         'Content-Type': 'application/json',
