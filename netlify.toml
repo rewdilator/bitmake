@@ -9,10 +9,10 @@
   status = 200
   force = true
 
-# Orderbook endpoint - EXACT match for /api/orderbook/:ticker_id
+# Orderbook endpoint - using splat for better path handling
 [[redirects]]
-  from = "/api/orderbook/:ticker_id"
-  to = "/.netlify/functions/getOrderbook?ticker_id=:ticker_id"
+  from = "/api/orderbook/*"
+  to = "/.netlify/functions/getOrderbook/:splat"
   status = 200
   force = true
 
