@@ -1,3 +1,0 @@
-/api/tickers /.netlify/functions/fetchSerenity 200
-/api/orderbook /.netlify/functions/fetchSerenity 200
-/* /index.html 200
