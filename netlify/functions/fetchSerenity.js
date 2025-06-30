@@ -1,14 +1,13 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  // Handle different endpoints
-  const path = event.path.replace('/.netlify/functions/fetchSerenity', '');
+  const path = event.path;
   const { ticker_id } = event.queryStringParameters;
   
   try {
     let apiUrl;
     
-    if (path.includes('/orderbook')) {
+    if (path.includes('/api/orderbook')) {
       if (!ticker_id) {
         return {
           statusCode: 400,
@@ -16,7 +15,7 @@ exports.handler = async (event) => {
         };
       }
       apiUrl = `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`;
-    } else if (path.includes('/tickers')) {
+    } else if (path.includes('/api/tickers')) {
       apiUrl = 'https://www.serenity.exchange/api/v2/trade/coingecko/tickers';
     } else {
       return {
