@@ -9,8 +9,8 @@
   force = true
 
 [[redirects]]
-  from = "/api/orderbook/*"
-  to = "/.netlify/functions/fetchSerenity?ticker_id=:splat"
+  from = "/api/orderbook/:ticker_id"
+  to = "/.netlify/functions/fetchSerenity?ticker_id=:ticker_id"
   status = 200
   force = true
 
