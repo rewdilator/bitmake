@@ -4,15 +4,17 @@
 
 [[redirects]]
   from = "/api/tickers"
-  to = "/.netlify/functions/fetchSerenity?endpoint=tickers"
+  to = "/.netlify/functions/fetchSerenity"
   status = 200
   force = true
 
 [[redirects]]
-  from = "/api/orderbook/:ticker_id"
-  to = "/.netlify/functions/fetchSerenity?endpoint=orderbook&ticker_id=:ticker_id"
+  from = "/api/orderbook/*"
+  to = "/.netlify/functions/fetchSerenity?ticker_id=:splat"
   status = 200
   force = true
+  conditions:
+    Role = "orderbook"
 
 [[headers]]
   for = "/api/*"
