@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serenity Exchange Data</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .container { display: flex; flex-direction: column; gap: 20px; }
+    .card { border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+    button { padding: 8px 16px; background: #0069ff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0056cc; }
+    .error { color: red; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Serenity Exchange Data</h1>
+    
+    <div class="card">
+      <h2>Tickers Data</h2>
+      <button id="fetchTickers">Fetch Tickers</button>
+      <div id="tickersOutput"></div>
+    </div>
+    
+    <div class="card">
+      <h2>Order Book</h2>
+      <div>
+        <input type="text" id="pairInput" placeholder="btc_usdt" value="btc_usdt">
+        <button id="fetchOrderBook">Fetch Order Book</button>
+      </div>
+      <div id="orderBookOutput"></div>
+    </div>
+  </div>
+
+  <script>
+    // Client-side fetch functions
+    async function fetchTickers() {
+      try {
+        // Using Netlify Function
+        const response = await fetch('/.netlify/functions/fetchSerenity');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        displayData(data, 'tickersOutput');
+      } catch (error) {
+        showError(error, 'tickersOutput');
+      }
+    }
+
+    async function fetchOrderBook(pair) {
+      try {
+        // Using Netlify Function
+        const response = await fetch(`/.netlify/functions/fetchSerenity/orderbook?ticker_id=${pair}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        displayData(data, 'orderBookOutput');
+      } catch (error) {
+        showError(error, 'orderBookOutput');
+      }
+    }
+
+    function displayData(data, elementId) {
+      const output = document.getElementById(elementId);
+      output.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    }
+
+    function showError(error, elementId) {
+      console.error(error);
+      document.getElementById(elementId).innerHTML = 
+        `<p class="error">Error: ${error.message}</p>`;
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('fetchTickers').addEventListener('click', fetchTickers);
+      
+      document.getElementById('fetchOrderBook').addEventListener('click', () => {
+        const pair = document.getElementById('pairInput').value || 'btc_usdt';
+        fetchOrderBook(pair);
+      });
+      
+      // Fetch tickers on page load
+      fetchTickers();
+    });
+  </script>
+</body>
+</html>
