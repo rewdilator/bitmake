@@ -1,5 +1,4 @@
 [build]
-  command = "npm install && npm install node-fetch"
   publish = "public"
   functions = "functions"
 
@@ -14,11 +13,6 @@
   to = "/.netlify/functions/fetchSerenity"
   status = 200
   force = true
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
 
 [[headers]]
   for = "/api/*"
