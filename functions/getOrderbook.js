@@ -1,17 +1,14 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  // Debug: Log the entire event
-  console.log("Incoming event:", JSON.stringify(event, null, 2));
-  
-  const { ticker_id } = event.queryStringParameters || {};
+  // Extract ticker_id from path parameters
+  const ticker_id = event.path.split('/').pop();
   
   if (!ticker_id) {
     return {
       statusCode: 400,
       body: JSON.stringify({ 
         error: "ticker_id is required",
-        received_query: event.queryStringParameters,
         path: event.path
       }),
       headers: {
