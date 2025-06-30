@@ -19,7 +19,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const apiUrl = `https://www.serenity.exchange/api/v2/orderbook/coingecko?ticker_id=${ticker_id}`;
+    const apiUrl = `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`;
     console.log("Fetching from:", apiUrl);
     
     const response = await fetch(apiUrl);
@@ -44,7 +44,7 @@ exports.handler = async (event) => {
       statusCode: 500,
       body: JSON.stringify({ 
         error: error.message,
-        attempted_url: `https://www.serenity.exchange/api/v2/orderbook/coingecko?ticker_id=${ticker_id}`
+        attempted_url: `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`
       }),
       headers: {
         'Content-Type': 'application/json',
