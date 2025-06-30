@@ -4,13 +4,13 @@
 
 [[redirects]]
   from = "/api/tickers"
-  to = "/.netlify/functions/fetchSerenity"
+  to = "/.netlify/functions/getTickers"
   status = 200
   force = true
 
 [[redirects]]
   from = "/api/orderbook/*"
-  to = "/.netlify/functions/fetchOrderbook?ticker_id=:splat"
+  to = "/.netlify/functions/getOrderbook?ticker_id=:splat"
   status = 200
   force = true
 
