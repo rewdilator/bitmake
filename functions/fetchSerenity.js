@@ -7,10 +7,10 @@ exports.handler = async (event) => {
     let apiUrl;
     
     if (ticker_id) {
-      // This is an orderbook request
-      apiUrl = `https://www.serenity.exchange/api/v2/trade/coingecko/orderbook?ticker_id=${ticker_id}`;
+      // ORDERBOOK ENDPOINT - use the correct API path
+      apiUrl = `https://www.serenity.exchange/api/v2/orderbook/coingecko?ticker_id=${ticker_id}`;
     } else {
-      // This is a tickers request
+      // TICKERS ENDPOINT
       apiUrl = 'https://www.serenity.exchange/api/v2/trade/coingecko/tickers';
     }
     
