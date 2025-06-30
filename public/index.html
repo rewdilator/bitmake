@@ -37,7 +37,6 @@
   </div>
 
   <script>
-    // Client-side fetch functions with enhanced error handling
     async function fetchTickers() {
       const output = document.getElementById('tickersOutput');
       output.innerHTML = '<p class="loading">Loading tickers...</p>';
@@ -72,7 +71,6 @@
         
         const data = await response.json();
         
-        // Validate orderbook structure
         if (!data.bids || !data.asks) {
           throw new Error('Order book data is not in expected format');
         }
@@ -99,7 +97,6 @@
       `;
     }
 
-    // Event listeners
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('fetchTickers').addEventListener('click', fetchTickers);
       document.getElementById('fetchOrderBook').addEventListener('click', () => {
@@ -107,7 +104,6 @@
         fetchOrderBook(pair);
       });
       
-      // Fetch tickers on page load
       fetchTickers();
     });
   </script>
